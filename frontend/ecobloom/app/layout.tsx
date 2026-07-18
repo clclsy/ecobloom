@@ -21,7 +21,7 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ecobloom — the lamp that grows with your habits",
+  title: "Ecobloom, the lamp that grows with your habits",
   description:
     "Ecobloom is a flower-shaped lamp that dims itself when you leave the room, and blooms or wilts with your energy habits over time.",
 };
