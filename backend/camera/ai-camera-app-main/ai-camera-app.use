@@ -1,0 +1,6 @@
+%C [options]
+
+Selfie camera app that can detect and higlight faces or take stylized snapshots.
+
+Options:
+  -cameraindex=[int]  Sets the camera index to use

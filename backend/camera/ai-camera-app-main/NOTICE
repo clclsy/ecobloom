@@ -1,0 +1,26 @@
+AI Camera App
+Copyright 2025 QNX Software Systems Limited
+
+This product includes software developed at BlackBery QNX (https://blackberry.qnx.com).
+
+The code is licensed under the Apache License, Version 2.0. See LICENSE file for details.
+
+The styleImages directory contains images sourced from Wikimedia Commons.
+
+  styleImages/Bouquet.jpg is in the public domain.
+    source: https://commons.wikimedia.org/wiki/File:Painting%2716StudioXLII44x38.jpg
+
+  styleImages/GabrielRobin.jpg is licensed under the Creative Commons Attribution-Share Alike 4.0 International license.
+    source: https://commons.wikimedia.org/wiki/File:Gabriel_Robin_-_1947_-_Le_feu_de_bois.jpg
+
+  styleImages/Studio.jpg is licensed under the Creative Commons Attribution-Share Alike 4.0 International license.
+    source: https://commons.wikimedia.org/wiki/File:Painting%2716StudioXLII44x38.jpg
+
+  styleImages/Sunday.jpg is in the public domain.
+    source: https://commons.wikimedia.org/wiki/File:A_Sunday_on_La_Grande_Jatte,_Georges_Seurat,_1884.jpg
+
+  styleImages/Suprematist.jpg is in the public domain.
+    source: https://commons.wikimedia.org/wiki/File:Suprematist_Composition_-_Kazimir_Malevich.jpg
+
+  styleImages/Winter.jpg is in the public domain.
+    source: https://commons.wikimedia.org/wiki/File:Ivan_Grohar_-_Zimsko_jutro_(alt).jpg
