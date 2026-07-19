@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <cstdlib>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -39,11 +41,25 @@ static void handle_sigint(int) { Running = 0; }
 // EDIT THESE to match your website's ingestion endpoint and payload
 // schema. Plain HTTP (no TLS) since it's on your local network.
 // --------------------------------------------------------------------
-static const char *ReportHost = "192.168.1.x"; // <-- your website's IP/hostname
-static const int   ReportPort = 8000;             // <-- your website's port
-static const char *ReportPath = "/api/readings";  // <-- your ingestion endpoint path
+static const char *ReportHost = "192.168.1.100"; // <-- your website's IP/hostname, if you still want raw carbon_score logged there
+static const int   ReportPort = 8000;
+static const char *ReportPath = "/api/readings";
 static const char *DeviceId   = "rpi5-demo-01";
 static const double ReportIntervalSeconds = 15.0;
+
+// mood.py (Person 2's server) -- runs on this same Pi by default (matches
+// led.py's localhost:5000 assumption). Change host if it runs elsewhere.
+static const char *MoodServerHost = "127.0.0.1";
+static const int   MoodServerPort = 5000;
+static const double StateReportIntervalSeconds = 1.0; // mood.py assumes ~1s calls -- don't slow this down
+
+// --------------------------------------------------------------------
+// State classification thresholds. TUNE THESE against your actual room/
+// camera -- I have no way to calibrate these for your specific setup.
+// --------------------------------------------------------------------
+static const double DARK_LUMA_THRESHOLD = 10.0;      // avg luma below this = "dark" (lights off)
+static const double MOTION_THRESHOLD = 4.0;          // mean abs luma diff between frames above this = motion detected
+static const double PRESENCE_TIMEOUT_SECONDS = 3.0;  // "person present" persists this long after last motion
 
 // --------------------------------------------------------------------
 // Carbon estimation config + state
@@ -183,6 +199,113 @@ static int http_post_json(const std::string &host, int port, const std::string &
     return statusCode;
 }
 
+static int http_get(const std::string &host, int port, const std::string &path) {
+    struct addrinfo hints;
+    struct addrinfo *result = nullptr;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    std::ostringstream portStr;
+    portStr << port;
+    if (getaddrinfo(host.c_str(), portStr.str().c_str(), &hints, &result) != 0 || !result) {
+        return -1;
+    }
+
+    int sockFd = -1;
+    for (struct addrinfo *rp = result; rp != nullptr; rp = rp->ai_next) {
+        sockFd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (sockFd == -1) continue;
+        if (connect(sockFd, rp->ai_addr, rp->ai_addrlen) != -1) break;
+        close(sockFd);
+        sockFd = -1;
+    }
+    freeaddrinfo(result);
+    if (sockFd == -1) return -2;
+
+    std::ostringstream request;
+    request << "GET " << path << " HTTP/1.1\r\n"
+            << "Host: " << host << "\r\n"
+            << "Connection: close\r\n"
+            << "\r\n";
+    std::string requestStr = request.str();
+
+    size_t totalSent = 0;
+    while (totalSent < requestStr.size()) {
+        ssize_t sent = send(sockFd, requestStr.c_str() + totalSent, requestStr.size() - totalSent, 0);
+        if (sent <= 0) { close(sockFd); return -3; }
+        totalSent += sent;
+    }
+
+    char getBuf[512] = {0};
+    ssize_t received = recv(sockFd, getBuf, sizeof(getBuf) - 1, 0);
+    close(sockFd);
+    if (received <= 0) return -4;
+
+    int getStatus = -5;
+    if (strncmp(getBuf, "HTTP/", 5) == 0) {
+        const char *spacePos = strchr(getBuf, ' ');
+        if (spacePos) getStatus = atoi(spacePos + 1);
+    }
+    return getStatus;
+}
+
+// --------------------------------------------------------------------
+// Motion/presence detection: compares each frame's NV12 luma plane to the
+// previous one. A crude proxy for "someone is in the room" -- it reacts
+// to any movement, not specifically a person, and won't detect someone
+// sitting perfectly still. Good enough for a hackathon demo; say so if asked.
+// --------------------------------------------------------------------
+static std::vector<uint8_t> PrevFrameY;
+static struct timespec LastMotionTime = {0, 0};
+static bool HasPrevFrame = false;
+
+static void detect_motion(camera_buffer_t *buf) {
+    if (FrameFormat != CAMERA_FRAMETYPE_NV12) return; // only wired up for the format we've confirmed on this camera
+    uint8_t *data = static_cast<uint8_t*>(buf->framebuf);
+    if (!data) return;
+
+    uint64_t numPixels = static_cast<uint64_t>(FrameWidth) * FrameHeight;
+    if (PrevFrameY.size() != numPixels) {
+        PrevFrameY.resize(numPixels);
+        HasPrevFrame = false;
+    }
+
+    if (HasPrevFrame) {
+        uint64_t sumDiff = 0;
+        uint64_t sampled = 0;
+        // Sample every 8th pixel to keep this cheap -- full-resolution diffing
+        // isn't necessary for a coarse motion signal.
+        for (uint64_t i = 0; i < numPixels; i += 8) {
+            sumDiff += (uint64_t)abs((int)data[i] - (int)PrevFrameY[i]);
+            sampled++;
+        }
+        double meanDiff = sampled > 0 ? (double)sumDiff / sampled : 0.0;
+        if (meanDiff > MOTION_THRESHOLD) {
+            clock_gettime(CLOCK_MONOTONIC, &LastMotionTime);
+        }
+    }
+
+    memcpy(PrevFrameY.data(), data, numPixels);
+    HasPrevFrame = true;
+}
+
+static bool presence_detected() {
+    if (LastMotionTime.tv_sec == 0 && LastMotionTime.tv_nsec == 0) return false; // never seen motion yet
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return timespec_diff_seconds(now, LastMotionTime) < PRESENCE_TIMEOUT_SECONDS;
+}
+
+// Classifies the current camera state into exactly what mood.py expects:
+// "dark", "light_person", or "light_no_person".
+static std::string classify_state() {
+    if (Stats.avgLuminance < DARK_LUMA_THRESHOLD) {
+        return "dark";
+    }
+    return presence_detected() ? "light_person" : "light_no_person";
+}
+
 // Builds the JSON body posted to the website: just the calculated carbon
 // score (running cumulative gCO2e total). See build_explanation() (used
 // only for local console/debug output, not sent to the frontend) for the
@@ -260,6 +383,7 @@ static void status_callback(camera_handle_t handle, camera_devstatus_t devstatus
 
 static void frame_callback(camera_handle_t handle, camera_buffer_t *buf, void *arg) {
     (void)handle; (void)arg;
+    detect_motion(buf);
     double luma = average_luma(buf);
     if (luma >= 0) {
         carbon_process_luminance(luma);
@@ -320,19 +444,38 @@ int main() {
     printf("Viewfinder started. Press Ctrl+C to stop.\n");
     struct timespec lastReportTime;
     clock_gettime(CLOCK_MONOTONIC, &lastReportTime);
+    struct timespec lastStateReportTime;
+    clock_gettime(CLOCK_MONOTONIC, &lastStateReportTime);
 
     while (Running) {
-        usleep(500000);
+        usleep(200000); // finer sleep so the ~1s state report timing stays accurate
 
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
+
+        // ~1Hz: report camera state to mood.py (Person 2's server), which
+        // owns the actual mood math and expects roughly this cadence.
+        if (timespec_diff_seconds(now, lastStateReportTime) >= StateReportIntervalSeconds) {
+            std::string state = classify_state();
+            std::string path = "/state/" + state;
+            int stateStatus = http_get(MoodServerHost, MoodServerPort, path);
+            if (stateStatus < 0) {
+                fprintf(stderr, "State report to mood.py failed (network error code %d)\n", stateStatus);
+            } else {
+                printf("Reported state=%s to mood.py, HTTP %d\n", state.c_str(), stateStatus);
+            }
+            lastStateReportTime = now;
+        }
+
+        // Every 15s: optional raw carbon_score to your website, if you're
+        // still using it (independent of the mood.py/led.py chain above).
         if (timespec_diff_seconds(now, lastReportTime) >= ReportIntervalSeconds) {
             std::string body = build_reading_json();
             int status = http_post_json(ReportHost, ReportPort, ReportPath, body);
             if (status < 0) {
-                fprintf(stderr, "Report failed (network error code %d)\n", status);
+                fprintf(stderr, "Report to website failed (network error code %d)\n", status);
             } else {
-                printf("Reported reading, HTTP %d\n", status);
+                printf("Reported to website, HTTP %d\n", status);
             }
             lastReportTime = now;
         }
