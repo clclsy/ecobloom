@@ -74,6 +74,13 @@ struct CarbonStats {
 static CarbonStats Stats;
 static struct timespec LastSampleTime = {0, 0};
 
+// Whether the most recent sample was above the baseline brightness --
+// i.e. whether the light looks "on". Same threshold the carbon estimate
+// already uses (CarbonCfg.baselineLuminance), just exposed as its own
+// flag so the backend's EcoBloom mood tracker can key off it directly
+// instead of re-deriving it from carbon_score.
+static bool LastLightOn = false;
+
 static double timespec_diff_seconds(const struct timespec &a, const struct timespec &b) {
     return (a.tv_sec - b.tv_sec) + (a.tv_nsec - b.tv_nsec) / 1e9;
 }
@@ -89,9 +96,11 @@ static void carbon_process_luminance(double avgLuminance) {
         return;
     }
 
+    LastLightOn = avgLuminance > CarbonCfg.baselineLuminance;
+
     double estimatedLux = 0.0;
     double estimatedWatts = 0.0;
-    if (avgLuminance > CarbonCfg.baselineLuminance) {
+    if (LastLightOn) {
         estimatedLux = CarbonCfg.luminanceToLuxSlope * avgLuminance + CarbonCfg.luminanceToLuxIntercept;
         if (estimatedLux < 0) estimatedLux = 0;
         double totalLumens = estimatedLux * CarbonCfg.approxAreaSqMeters;
@@ -180,15 +189,29 @@ static int http_post_json(const std::string &host, int port, const std::string &
     return statusCode;
 }
 
-// Builds the JSON body posted to the website: just the calculated carbon
-// score (running cumulative gCO2e total).
+// Returns the current time as an ISO8601 UTC string, e.g.
+// "2026-07-19T14:03:22Z". The backend uses this to bucket readings by
+// day/month for the monthly report.
+static std::string iso8601_now() {
+    time_t t = time(nullptr);
+    struct tm utc;
+    gmtime_r(&t, &utc);
+    char buf[32];
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &utc);
+    return std::string(buf);
+}
+
+// Builds the JSON body posted to the website: the calculated carbon
+// score (running cumulative gCO2e total) plus a timestamp.
 static std::string build_reading_json() {
     std::ostringstream json;
     json.precision(4);
     json << std::fixed;
     json << "{"
          << "\"device_id\":\"" << DeviceId << "\","
-         << "\"carbon_score\":" << Stats.cumulativeGramsCO2e
+         << "\"carbon_score\":" << Stats.cumulativeGramsCO2e << ","
+         << "\"timestamp\":\"" << iso8601_now() << "\","
+         << "\"light_on\":" << (LastLightOn ? "true" : "false")
          << "}";
     return json.str();
 }
