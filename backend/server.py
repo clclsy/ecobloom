@@ -284,6 +284,40 @@ def post_reset():
     reset_plant_thread()
     return jsonify({"ok": True})
 
+# ---------------------------------------------------------------------
+# Frontend-compatible aliases.
+#
+# DashboardAura.tsx (the Next.js dashboard) was built against a
+# different field/route naming ({mood, tier} at GET /mood, {answer} at
+# POST /chat with {question}) than the rest of this backend uses
+# ({mood_score, tier} at GET /api/mood, {answer} at POST /api/ask-plant).
+# Rather than edit the frontend, these two routes just wrap the existing
+# logic and reshape the response so DashboardAura.tsx works unmodified
+# against this server (the one actually fed by camera_test.cpp).
+# ---------------------------------------------------------------------
+@app.route("/mood", methods=["GET"])
+def get_mood_alias():
+    return jsonify({
+        "mood": round(mood_tracker.mood_score, 1),
+        "tier": mood_tracker.tier,
+    })
+
+
+@app.route("/chat", methods=["POST"])
+def post_chat_alias():
+    body = request.get_json(silent=True) or {}
+    question = body.get("question", "").strip()
+    if not question:
+        return jsonify({"error": "missing 'question' field"}), 400
+
+    answer = ask_plant(
+        question,
+        mood_tracker.log,
+        mood_score=round(mood_tracker.mood_score, 1),
+        tier=mood_tracker.tier,
+    )
+    return jsonify({"answer": answer})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

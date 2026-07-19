@@ -44,6 +44,351 @@
       "device_id": "rpi5-demo-01",
       "carbon_score": 0.0472,
       "timestamp": "2026-07-19T10:26:30Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0539,
+      "timestamp": "2026-07-19T10:26:45Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0609,
+      "timestamp": "2026-07-19T10:27:00Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0678,
+      "timestamp": "2026-07-19T10:27:15Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0747,
+      "timestamp": "2026-07-19T10:27:30Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0809,
+      "timestamp": "2026-07-19T10:27:45Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0874,
+      "timestamp": "2026-07-19T10:28:00Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0935,
+      "timestamp": "2026-07-19T10:28:15Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0999,
+      "timestamp": "2026-07-19T10:28:30Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1065,
+      "timestamp": "2026-07-19T10:28:45Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1125,
+      "timestamp": "2026-07-19T10:29:00Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1193,
+      "timestamp": "2026-07-19T10:29:16Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1257,
+      "timestamp": "2026-07-19T10:29:31Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1324,
+      "timestamp": "2026-07-19T10:29:46Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1388,
+      "timestamp": "2026-07-19T10:30:01Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1448,
+      "timestamp": "2026-07-19T10:30:16Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1513,
+      "timestamp": "2026-07-19T10:30:31Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1575,
+      "timestamp": "2026-07-19T10:30:46Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1642,
+      "timestamp": "2026-07-19T10:31:01Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1698,
+      "timestamp": "2026-07-19T10:31:16Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1756,
+      "timestamp": "2026-07-19T10:31:31Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1813,
+      "timestamp": "2026-07-19T10:31:46Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.187,
+      "timestamp": "2026-07-19T10:32:01Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1932,
+      "timestamp": "2026-07-19T10:32:16Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.1976,
+      "timestamp": "2026-07-19T10:32:31Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.203,
+      "timestamp": "2026-07-19T10:32:46Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2098,
+      "timestamp": "2026-07-19T10:33:01Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2174,
+      "timestamp": "2026-07-19T10:33:16Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2245,
+      "timestamp": "2026-07-19T10:33:31Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2323,
+      "timestamp": "2026-07-19T10:33:46Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.24,
+      "timestamp": "2026-07-19T10:34:01Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.247,
+      "timestamp": "2026-07-19T10:34:17Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2544,
+      "timestamp": "2026-07-19T10:34:32Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2612,
+      "timestamp": "2026-07-19T10:34:47Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2687,
+      "timestamp": "2026-07-19T10:35:02Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2764,
+      "timestamp": "2026-07-19T10:35:17Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2831,
+      "timestamp": "2026-07-19T10:35:32Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2904,
+      "timestamp": "2026-07-19T10:35:47Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.2971,
+      "timestamp": "2026-07-19T10:36:02Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3042,
+      "timestamp": "2026-07-19T10:36:17Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3191,
+      "timestamp": "2026-07-19T10:36:49Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3263,
+      "timestamp": "2026-07-19T10:37:05Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.333,
+      "timestamp": "2026-07-19T10:37:20Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3399,
+      "timestamp": "2026-07-19T10:37:35Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3474,
+      "timestamp": "2026-07-19T10:37:50Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3542,
+      "timestamp": "2026-07-19T10:38:05Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3615,
+      "timestamp": "2026-07-19T10:38:20Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3681,
+      "timestamp": "2026-07-19T10:38:35Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3752,
+      "timestamp": "2026-07-19T10:38:50Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3813,
+      "timestamp": "2026-07-19T10:39:05Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3882,
+      "timestamp": "2026-07-19T10:39:20Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.3947,
+      "timestamp": "2026-07-19T10:39:35Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4007,
+      "timestamp": "2026-07-19T10:39:50Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4072,
+      "timestamp": "2026-07-19T10:40:05Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4096,
+      "timestamp": "2026-07-19T10:40:20Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4168,
+      "timestamp": "2026-07-19T10:40:35Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4242,
+      "timestamp": "2026-07-19T10:40:50Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4308,
+      "timestamp": "2026-07-19T10:41:05Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4372,
+      "timestamp": "2026-07-19T10:41:20Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4433,
+      "timestamp": "2026-07-19T10:41:35Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4498,
+      "timestamp": "2026-07-19T10:41:51Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4558,
+      "timestamp": "2026-07-19T10:42:06Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4623,
+      "timestamp": "2026-07-19T10:42:21Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4683,
+      "timestamp": "2026-07-19T10:42:36Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4747,
+      "timestamp": "2026-07-19T10:42:51Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4811,
+      "timestamp": "2026-07-19T10:43:06Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4871,
+      "timestamp": "2026-07-19T10:43:21Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4936,
+      "timestamp": "2026-07-19T10:43:36Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.4996,
+      "timestamp": "2026-07-19T10:43:51Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.506,
+      "timestamp": "2026-07-19T10:44:06Z"
     }
   ],
   "manualEntries": [

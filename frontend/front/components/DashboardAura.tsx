@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import FlowerOrb from "./FlowerOrb";
  
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
  
 interface ChatMessage {
   role: "user" | "plant";
