@@ -1,3 +1,68 @@
-ecobloom
+## Inspiration
 
-a lamp that blooms when you save energy, and wilts when you don't
+We started with the Deloitte Green AI challenge, how can AI be resource-efficient while solving environmental problems? That led us to hardware: what if we built a real-time embedded system that makes energy waste *visible and emotional* rather than just showing numbers on a dashboard? Enter EcoBloom: a plant that literally reacts to your household's energy habits in real time.
+
+The core insight: people waste energy without realizing it. A dashboard telling you "lights on 23 minutes" gets ignored. A plant visibly wilting because you left the lights on, you can't ignore that.
+
+## What it does
+
+EcoBloom uses computer vision to detect room conditions (dark, lit with people, lit without people) and translates those states into a "mood score" that drives real-time environmental feedback:
+
+**The Plant (Hardware):** Green and yellow LEDs fade in real time, as mood drops from 100 (healthy, full green) to 0 (dying, full yellow), the colors crossfade smoothly. It's a physical, emotional representation of energy waste.
+
+**The Chatbot (AI):** Ask "why are you dying?" and EcoBloom, powered by Backboard, answers with reasons grounded in your *actual* sensor log. Not generic advice, specific to what happened in your home ("lights were on for 145 seconds with no one around").
+
+**The Dashboard (Web):** A responsive website shows live mood/HP, event history, plant graphics that match the physical LED state, and the conversational chatbot.
+
+**The Backend (Real-time Logic):** Built on QNX Raspberry Pi, the system runs camera detection, logs state transitions with precise timing, and exposes a clean API for all other components.
+
+## How we built it
+
+**Tech Stack:**
+- **Backend:** Python Flask (mood scoring, event logging, state machine) + QNX Raspberry Pi (real-time GPIO control)
+- **AI/Reasoning:** Backboard.io (LLM orchestration, grounding answers in event logs)
+- **Frontend:** React + HTML/CSS (responsive dashboard)
+
+**Key design decisions:**
+- **Stateful mood scoring** instead of threshold-based: tracks *duration* of bad states so brief light-ons don't trigger false alarms, but sustained waste gets caught immediately
+- **Local Backboard inference** means answers ground in real data, not generic LLM hallucination
+- **QNX + real-time GPIO** ensures the LEDs respond instantly (sub-100ms) rather than polling delays, critical for a believable, reactive demo
+- **Mock camera module** lets the team test the full pipeline before camera detection code exists
+
+## Challenges we ran into
+
+**Hardware wiring:** Getting male-to-female jumper wires and correctly wiring LEDs to GPIO pins took longer than expected. We're still finalizing the physical LED rig, but the code is complete and tested.
+
+**Real-time coordination:** Coordinating three separate systems (camera detection, mood server, LED controller, web frontend) meant careful API contract design upfront, we used mocked components early so no one was blocked.
+
+**Backboard API learning curve:** First time using Backboard; had to learn model routing and thread management, but the platform's straightforward REST API made it fast to integrate once we understood the model.
+
+**Sensor noise:** Camera detection can flicker on dark rooms or under bad lighting. We added temporal smoothing (duration thresholds) to avoid false state transitions.
+
+## Accomplishments that we're proud of
+
+✅ **Full end-to-end pipeline working:** from camera → mood logic → event log → Backboard reasoning → website display, all integrated and tested
+
+✅ **Backboard grounding:** the chatbot doesn't just generate text, it reads your actual event log and grounds answers in real data ("the lights were on for 145 seconds...", that's a real number from your home)
+
+✅ **Smooth LED crossfade:** the physical feedback isn't jarring on/off — it's a beautiful, continuous gradient from green to yellow as mood decays
+
+✅ **QNX real-time system:** chose QNX specifically for the Deloitte track and because real-time guarantees matter for a reactive device; the system runs deterministically
+
+✅ **Demo-ready in 36 hours:** even with hardware incomplete, the full software pipeline is live, tested, and repeatable
+
+## What we learned
+
+**Real-time systems matter:** Building on QNX forced us to think about latency, GPIO timing, and thread priorities, totally different from typical web development, and it's why the LEDs feel *responsive*.
+
+**Hardware is significantly harder than code:** Wiring, soldering, debugging physical connections takes way longer than we thought. Respect to hardware engineers.
+
+**API orchestration:** Using Backboard to route to LLMs, grounding responses in data, and coordinating multiple microservices taught us how to build scalable AI systems beyond just calling ChatGPT.
+
+**Behavioral design beats data design:** A plant that visibly dies is 1000x more impactful than a dashboard chart showing "energy waste percentages." Emotion drives behavior change.
+
+## What's next for EcoBloom
+
+**Immediate (next week):**
+- Finish LED hardware wiring and integrate the live physical demo
+- Deploy the Flask backend to a cloud platform (Render/Railway) so it's accessible over network
