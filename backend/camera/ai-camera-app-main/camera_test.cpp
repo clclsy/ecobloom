@@ -39,7 +39,7 @@ static void handle_sigint(int) { Running = 0; }
 // EDIT THESE to match your website's ingestion endpoint and payload
 // schema. Plain HTTP (no TLS) since it's on your local network.
 // --------------------------------------------------------------------
-static const char *ReportHost = "192.168.1.100"; // <-- your website's IP/hostname
+static const char *ReportHost = "192.168.1.x"; // <-- your website's IP/hostname
 static const int   ReportPort = 8000;             // <-- your website's port
 static const char *ReportPath = "/api/readings";  // <-- your ingestion endpoint path
 static const char *DeviceId   = "rpi5-demo-01";
