@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ecobloom, your home has a pulse</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fbf4f1; --bg-deep:#f5e8e2; --paper:#fffaf7;
+    --pink-soft:#f6d3e2; --pink:#ea93b8; --pink-deep:#c65e8c;
+    --green-soft:#d9ecd6; --green:#82b98c; --green-deep:#4f7f5b;
+    --amber:#f3c579; --wilt:#a98164; --wilt-deep:#7c5c46;
+    --ink:#372b3c; --ink-soft:#6b5c6f; --ink-faint:#a397a5;
+    --font-display:'Fraunces', ui-serif, Georgia, serif;
+    --font-body:'Sora', ui-sans-serif, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+  a{text-decoration:none;color:inherit}
+  .italic{font-style:italic}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  header{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);background:rgba(251,244,241,.72);border-bottom:1px solid rgba(55,43,60,.06)}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .logo{font-family:var(--font-display);font-style:italic;font-size:21px}
+  .nav-links{display:flex;gap:32px;font-size:14px;color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{font-size:14px;font-weight:500;background:var(--ink);color:var(--paper);border-radius:999px;padding:9px 18px;transition:background .2s;border:none;cursor:pointer}
+  .btn:hover{background:var(--pink-deep)}
+  .btn-pink{background:var(--pink-deep)}
+  .btn-pink:hover{background:var(--ink)}
+
+  section{position:relative}
+  .hero{overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(60% 50% at 80% 10%, var(--pink-soft) 0%, transparent 60%),
+      radial-gradient(50% 45% at 10% 25%, var(--green-soft) 0%, transparent 60%);
+  }
+  .hero-grid{display:grid;grid-template-columns:1fr;gap:48px;align-items:center;padding:64px 0 96px}
+  @media(min-width:860px){.hero-grid{grid-template-columns:1fr 1fr}}
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.2em;color:var(--pink-deep);font-weight:600;margin-bottom:18px}
+  .eyebrow.green{color:var(--green-deep)}
+  h1{font-family:var(--font-display);font-size:56px;line-height:1.05;margin:0 0 22px}
+  h1 .accent{font-style:italic;color:var(--pink-deep)}
+  .lede{font-size:18px;color:var(--ink-soft);line-height:1.65;max-width:440px;margin-bottom:30px}
+  .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+  .link-quiet{font-size:14px;font-weight:500;color:var(--ink-soft)}
+  .link-quiet:hover{color:var(--ink)}
+
+  /* flower demo */
+  .demo{display:flex;flex-direction:column;align-items:center}
+  .orb-wrap{position:relative;width:100%;max-width:380px;aspect-ratio:1/1;margin:0 auto}
+  .aura{position:absolute;inset:0;border-radius:999px;filter:blur(48px);transition:opacity .6s ease, transform .6s ease;
+    background:radial-gradient(circle, var(--pink-soft) 0%, var(--green-soft) 55%, transparent 75%);}
+  svg{position:relative;width:82%;height:82%;display:block;margin:0 auto}
+  .petal-wrap{transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+  .petal{transition:fill 1.1s ease, transform 1.1s cubic-bezier(.22,1,.36,1);transform-box:fill-box;transform-origin:center}
+  .switch-row{margin-top:22px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .switch-btn{display:flex;align-items:center;gap:12px;border-radius:999px;background:rgba(255,250,247,.85);border:1px solid rgba(55,43,60,.1);
+    padding:8px 6px 8px 18px;box-shadow:0 1px 2px rgba(0,0,0,.04);cursor:pointer;font-family:var(--font-body)}
+  .switch-btn:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .switch-label{font-size:14px;color:var(--ink-soft)}
+  .switch{position:relative;width:44px;height:24px;border-radius:999px;background:var(--green);transition:background .3s}
+  .switch.on{background:var(--wilt)}
+  .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:999px;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .3s}
+  .switch.on .knob{transform:translateX(20px)}
+  .hint{font-size:12px;color:var(--ink-faint);letter-spacing:.02em}
+
+  /* how it works: vertical timeline, not a 3-card grid */
+  .how{padding:96px 0}
+  h2{font-family:var(--font-display);font-size:34px;margin:0 0 16px}
+  .how h2{margin-bottom:56px;max-width:480px}
+  .timeline{position:relative;max-width:640px}
+  .timeline::before{content:'';position:absolute;left:15px;top:8px;bottom:8px;width:1px;
+    background:linear-gradient(to bottom, var(--pink-soft), var(--green-soft), transparent)}
+  .tl-item{position:relative;display:flex;gap:20px;padding-bottom:44px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-badge{flex-shrink:0;width:32px;height:32px;border-radius:999px;background:var(--paper);border:1px solid rgba(234,147,184,.4);
+    display:flex;align-items:center;justify-content:center;font-size:13px}
+  .tl-item h3{font-family:var(--font-display);font-size:20px;margin:0 0 6px}
+  .tl-item p{font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0;max-width:440px}
+
+  /* dashboard aura card */
+  .dashboard{background:var(--bg-deep)}
+  .dashboard-inner{padding:96px 0}
+  .dashboard h2{max-width:480px}
+  .dashboard>.wrap>p{color:var(--ink-soft);max-width:560px;margin-bottom:48px;line-height:1.65}
+  .aura-card{position:relative;border-radius:28px;overflow:hidden;border:1px solid rgba(55,43,60,.08);background:var(--paper);padding:32px 24px}
+  @media(min-width:640px){.aura-card{padding:48px 40px}}
+  .aura-bg{position:absolute;inset:0;z-index:0;
+    background:radial-gradient(48% 55% at 50% 42%, var(--pink-soft) 0%, var(--green-soft) 45%, transparent 78%)}
+  .aura-content{position:relative;z-index:1}
+  .aura-top{display:flex;align-items:flex-start;justify-content:space-between;font-size:12px}
+  .aura-top .eb{text-transform:uppercase;letter-spacing:.18em;color:var(--ink-soft);font-weight:600}
+  .aura-top .time{text-transform:uppercase;letter-spacing:.18em;color:var(--ink-faint)}
+  .aura-center{display:flex;flex-direction:column;align-items:center;padding:24px 0}
+  @media(min-width:640px){.aura-center{padding:40px 0}}
+  .aura-flower-wrap{position:relative;width:180px;aspect-ratio:1/1;margin:0 auto}
+  .aura-logo{font-family:var(--font-display);font-style:italic;font-size:18px;margin-top:-8px}
+  .vitality-block{width:100%;max-width:320px;margin-top:24px}
+  .vitality-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .vitality-row .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+  .vitality-row .value{font-family:var(--font-display);font-size:22px}
+  .vitality-track{height:8px;border-radius:999px;background:rgba(55,43,60,.08);overflow:hidden}
+  .vitality-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--wilt),var(--amber),var(--green));width:78%}
+  .vitality-note{font-size:12px;color:var(--ink-faint);margin-top:8px}
+  .aura-bottom{display:flex;flex-direction:column;gap:16px;padding-top:8px;border-top:1px solid rgba(55,43,60,.08)}
+  @media(min-width:640px){.aura-bottom{flex-direction:row;align-items:flex-end;justify-content:space-between}}
+  .aura-bottom p{font-size:14px;color:var(--ink-soft);max-width:320px;margin:0}
+  .ask-backboard{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:var(--ink);color:var(--paper);
+    font-size:14px;font-weight:500;padding:11px 18px}
+  .ask-backboard:hover{background:var(--pink-deep)}
+
+  /* app section: flowing prose, no bullet triad */
+  .app{padding:96px 0;display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+  @media(min-width:860px){.app{grid-template-columns:1fr 1fr}}
+  .app h2{max-width:400px}
+  .app p.lede2{color:var(--ink-soft);line-height:1.7;max-width:440px}
+
+  .phone-outer{max-width:300px;margin:0 auto;border-radius:44px;border:6px solid #3a2e3f;background:#3a2e3f;box-shadow:0 25px 60px rgba(198,94,140,.12);overflow:hidden;position:relative}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:112px;height:24px;background:#3a2e3f;border-radius:0 0 16px 16px;z-index:5}
+  .phone-inner{background:linear-gradient(to bottom,#fbf4f1,#f6e9e3);border-radius:35px;padding:40px 12px 32px;min-height:520px}
+  .phone-inner .today{text-align:center;font-size:12px;color:var(--ink-soft);margin-bottom:18px}
+  .notif{border-radius:16px;padding:14px;margin-bottom:12px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+  .notif.visible{opacity:1;transform:translateY(0)}
+  .notif.wilt{background:rgba(239,226,214,.9);box-shadow:inset 0 0 0 1px rgba(169,129,100,.25)}
+  .notif.stat{background:rgba(246,211,226,.5);box-shadow:inset 0 0 0 1px rgba(198,94,140,.18)}
+  .notif.positive{background:rgba(217,236,214,.6);box-shadow:inset 0 0 0 1px rgba(79,127,91,.18)}
+  .notif-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+  .notif-brand{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+  .notif-dot{width:6px;height:6px;border-radius:999px}
+  .notif-time{font-size:10px;color:var(--ink-faint)}
+  .notif-title{font-family:var(--font-display);font-size:15px;margin:0 0 2px}
+  .notif-body{font-size:12.5px;line-height:1.5;color:var(--ink-soft);margin:0}
+
+  footer{border-top:1px solid rgba(55,43,60,.08)}
+  .footer-inner{padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  @media(min-width:600px){.footer-inner{flex-direction:row;justify-content:space-between;text-align:right}}
+  .footer-logo{font-family:var(--font-display);font-style:italic;font-size:18px}
+  .footer-note{font-size:12px;color:var(--ink-faint)}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:.035;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header>
+  <nav class="wrap">
+    <a href="#top" class="logo">🌸 ecobloom</a>
+    <div class="nav-links" style="display:none" id="navlinks">
+      <a href="#how">how it works</a>
+      <a href="#dashboard">the dashboard</a>
+      <a href="#app">the app</a>
+    </div>
+    <a href="#app" class="btn">see it bloom</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">🌸 A home sensor with a face</p>
+      <h1>Your home has a pulse.<br><span class="accent">Now you can see it.</span></h1>
+      <p class="lede">Ecobloom is a flower that lives with your habits. A sensor reads how your household uses energy: a light left on, an empty room still lit. The flower blooms or wilts to match, in real time.</p>
+      <div class="cta-row">
+        <a href="#app" class="btn btn-pink">meet the app</a>
+        <a href="#how" class="link-quiet">how it works ↓</a>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="orb-wrap">
+        <div class="aura" id="aura"></div>
+        <svg viewBox="0 0 320 320" role="img" aria-label="Flower vitality visualization">
+          <path d="M160 300 C 160 260, 150 230, 160 200" stroke="#82b98c" id="stem" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path id="leaf1" d="M160 260 C 130 255, 110 240, 108 218 C 135 218, 155 232, 160 260 Z" fill="#82b98c" opacity="0.85"/>
+          <path id="leaf2" d="M160 245 C 190 240, 208 224, 210 202 C 183 204, 165 218, 160 245 Z" fill="#82b98c" opacity="0.85"/>
+          <g id="bloomGroup" style="transform-origin:160px 190px">
+            <g transform="translate(160,150)" id="petalGroup"></g>
+          </g>
+        </svg>
+      </div>
+      <div class="switch-row">
+        <button class="switch-btn" id="toggleBtn">
+          <span class="switch-label" id="switchLabel">lights off, all clear</span>
+          <span class="switch" id="switchTrack"><span class="knob"></span></span>
+        </button>
+        <span class="hint">try it, this is the sensor talking to the flower, live</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how wrap" id="how">
+  <p class="eyebrow green">How it works</p>
+  <h2>From your light switch to a living flower.</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <span class="tl-badge">🌸</span>
+      <div>
+        <h3>The sensor reads the room</h3>
+        <p>A small hardware sensor tracks light, motion, and time. It knows how long a room has been lit with no one in it.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-badge">🌸</span>
+      <div>
+        <h3>The flower responds, right away</h3>
+        <p>Its housing glows or dims in step with your habits. Leave the lights on and it visibly wilts on your desk, not in a report.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-badge">🌸</span>
+      <div>
+        <h3>Backboard fills in the why</h3>
+        <p>Ask the built-in assistant what changed today and it points to the exact habit behind it, with a plain suggestion to fix it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dashboard" id="dashboard">
+  <div class="wrap dashboard-inner">
+    <p class="eyebrow">The dashboard</p>
+    <h2>Every glow and wilt is backed by a reading.</h2>
+    <p>The flower is the feeling. The dashboard is the receipt: a plain look at what your household used today, and Backboard on hand to explain it.</p>
+
+    <div class="aura-card">
+      <div class="aura-bg"></div>
+      <div class="aura-content">
+        <div class="aura-top">
+          <span class="eb">ecobloom · live reading</span>
+          <span class="time">Today, 9:52 PM</span>
+        </div>
+
+        <div class="aura-center">
+          <div class="aura-flower-wrap">
+            <div class="aura"></div>
+            <svg viewBox="0 0 320 320" role="img" aria-label="Current flower vitality" style="width:100%;height:100%">
+              <path d="M160 300 C 160 260, 150 230, 160 200" stroke="#82b98c" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <path d="M160 260 C 130 255, 110 240, 108 218 C 135 218, 155 232, 160 260 Z" fill="#82b98c" opacity="0.85" transform="rotate(6 160 260)"/>
+              <path d="M160 245 C 190 240, 208 224, 210 202 C 183 204, 165 218, 160 245 Z" fill="#82b98c" opacity="0.85" transform="rotate(-6 160 245)"/>
+              <g transform="translate(160,150)">
+                <g transform="rotate(0)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <g transform="rotate(60)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <g transform="rotate(120)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <g transform="rotate(180)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <g transform="rotate(240)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <g transform="rotate(300)"><ellipse cx="0" cy="-46" rx="24" ry="38" fill="#ea93b8" opacity="0.94"/></g>
+                <circle r="19" fill="#f3c579"/>
+              </g>
+            </svg>
+          </div>
+          <p class="aura-logo">🌸 ecobloom</p>
+
+          <div class="vitality-block">
+            <div class="vitality-row">
+              <span class="label">Flower vitality</span>
+              <span class="value">78%</span>
+            </div>
+            <div class="vitality-track"><div class="vitality-fill"></div></div>
+            <p class="vitality-note">Thriving. No room has sat lit and empty for more than a few minutes today.</p>
+          </div>
+        </div>
+
+        <div class="aura-bottom">
+          <p>Left on today: 2h 14m in the living room. Wasted: 1.8 kWh, about one load of laundry.</p>
+          <a href="#" class="ask-backboard">🌸 Ask Backboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="app wrap" id="app">
+  <div>
+    <p class="eyebrow green">The app</p>
+    <h2>Your flower, in your pocket.</h2>
+    <p class="lede2">You will not always be home to see it droop, so the app feels it for you. A notification when the flower starts wilting is written the way the flower would say it, not like a system log. The kWh behind it gets translated into something you can actually picture, and every bit you save gets celebrated the same way, shown as something real it could have powered instead.</p>
+  </div>
+  <div>
+    <div class="phone-outer">
+      <div class="notch"></div>
+      <div class="phone-inner">
+        <p class="today">Today</p>
+        <div class="notif wilt" data-notif>
+          <div class="notif-top"><span class="notif-brand"><span class="notif-dot" style="background:var(--wilt)"></span>ecobloom</span><span class="notif-time">9:41 PM</span></div>
+          <p class="notif-title">your flower is drooping 🥀</p>
+          <p class="notif-body">the living room light's been on for 2h 14m with no one home. it's starting to feel it.</p>
+        </div>
+        <div class="notif stat" data-notif>
+          <div class="notif-top"><span class="notif-brand"><span class="notif-dot" style="background:var(--pink-deep)"></span>ecobloom</span><span class="notif-time">9:52 PM</span></div>
+          <p class="notif-title">today's waste</p>
+          <p class="notif-body">1.8 kWh burned on empty rooms — about what it takes to run a load of laundry.</p>
+        </div>
+        <div class="notif positive" data-notif>
+          <div class="notif-top"><span class="notif-brand"><span class="notif-dot" style="background:var(--green-deep)"></span>ecobloom</span><span class="notif-time">Yesterday</span></div>
+          <p class="notif-title">your flower is thriving 🌸</p>
+          <p class="notif-body">you saved 2.3 kWh this week — enough to charge your phone every day for a month.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span class="footer-logo">🌸 ecobloom</span>
+    <p class="footer-note">A flower that keeps your habits honest, with suggestions from Backboard.</p>
+  </div>
+</footer>
+
+<script>
+  // responsive nav links
+  function updateNav(){document.getElementById('navlinks').style.display = window.innerWidth>=640?'flex':'none';}
+  updateNav(); window.addEventListener('resize',updateNav);
+
+  // build the hero petals: each petal's rotation lives on a static wrapper <g>,
+  // and only the ellipse inside gets the animated scale/fill, so the two
+  // transforms never fight each other (that was the original bug).
+  const petalGroup = document.getElementById('petalGroup');
+  const N = 6;
+  const petalEls = [];
+  for(let i=0;i<N;i++){
+    const angle = (360/N)*i;
+    const wrap = document.createElementNS('http://www.w3.org/2000/svg','g');
+    wrap.setAttribute('transform',`rotate(${angle})`);
+    wrap.setAttribute('class','petal-wrap');
+    const el = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    el.setAttribute('cx','0'); el.setAttribute('cy','-46');
+    el.setAttribute('rx','26'); el.setAttribute('ry','42');
+    el.setAttribute('fill','#ea93b8'); el.setAttribute('opacity','0.94');
+    el.setAttribute('class','petal');
+    wrap.appendChild(el);
+    petalGroup.appendChild(wrap);
+    petalEls.push(el);
+  }
+  const centerEl = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  centerEl.setAttribute('r','20'); centerEl.setAttribute('fill','#f3c579'); centerEl.setAttribute('class','petal');
+  petalGroup.appendChild(centerEl);
+
+  function mix(hexA,hexB,t){
+    const a=parseInt(hexA.slice(1),16), b=parseInt(hexB.slice(1),16);
+    const ar=(a>>16)&255, ag=(a>>8)&255, ab=a&255;
+    const br=(b>>16)&255, bg=(b>>8)&255, bb=b&255;
+    const r=Math.round(ar+(br-ar)*t), g=Math.round(ag+(bg-ag)*t), bl=Math.round(ab+(bb-ab)*t);
+    return `rgb(${r},${g},${bl})`;
+  }
+
+  let minutesLeft = 0;
+  let lightsOn = false;
+  const bloomGroup = document.getElementById('bloomGroup');
+  const aura = document.getElementById('aura');
+  const leaf1 = document.getElementById('leaf1');
+  const leaf2 = document.getElementById('leaf2');
+  const stem = document.getElementById('stem');
+
+  function render(){
+    const vitality = Math.max(6, 100 - minutesLeft*2.1);
+    const t = vitality/100;
+    const scale = 0.72 + (1-0.72)*t;
+    const droop = 26 - 26*t;
+    const glowOp = 0.12 + (0.55-0.12)*t;
+    const glowScale = 0.85 + (1.25-0.85)*t;
+    const petalColor = mix('#a98164','#ea93b8',t);
+    const centerColor = mix('#7c5c46','#f3c579',t);
+    const leafColor = mix('#8b8064','#82b98c',t);
+
+    bloomGroup.style.transform = `rotate(${droop}deg)`;
+    aura.style.opacity = glowOp;
+    aura.style.transform = `scale(${glowScale})`;
+    leaf1.setAttribute('fill', leafColor);
+    leaf2.setAttribute('fill', leafColor);
+    leaf1.style.transform = `rotate(${droop}deg)`;
+    leaf1.style.transformOrigin = '160px 260px';
+    leaf2.style.transform = `rotate(${-droop}deg)`;
+    leaf2.style.transformOrigin = '160px 245px';
+    stem.setAttribute('stroke', leafColor);
+    petalEls.forEach(p=>{
+      p.setAttribute('fill', petalColor);
+      p.style.transform = `scale(${scale})`;
+    });
+    centerEl.setAttribute('fill', centerColor);
+    centerEl.style.transform = `scale(${scale})`;
+  }
+  render();
+
+  const btn = document.getElementById('toggleBtn');
+  const track = document.getElementById('switchTrack');
+  const label = document.getElementById('switchLabel');
+  btn.addEventListener('click',()=>{
+    lightsOn = !lightsOn;
+    track.classList.toggle('on', lightsOn);
+    label.textContent = lightsOn ? 'an empty room, light left on' : 'lights off, all clear';
+  });
+
+  setInterval(()=>{
+    minutesLeft = lightsOn ? Math.min(minutesLeft+1,45) : Math.max(minutesLeft-3,0);
+    render();
+  }, 260);
+
+  // scroll reveal for notifications
+  const revealEls = document.querySelectorAll('.notif');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, {threshold:0.2});
+  revealEls.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
