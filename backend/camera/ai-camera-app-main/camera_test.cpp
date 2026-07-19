@@ -183,20 +183,17 @@ static int http_post_json(const std::string &host, int port, const std::string &
     return statusCode;
 }
 
-// Builds the JSON body posted to the website. Field names here are a
-// reasonable default -- rename them to match whatever your backend
-// actually expects.
+// Builds the JSON body posted to the website. Only the calculated carbon
+// score is sent (the running cumulative gCO2e total) -- swap in
+// Stats.estimatedWatts-derived per-interval math instead if you want a
+// per-report delta rather than a running total.
 static std::string build_reading_json() {
     std::ostringstream json;
     json.precision(4);
     json << std::fixed;
     json << "{"
          << "\"device_id\":\"" << DeviceId << "\","
-         << "\"avg_luminance\":" << Stats.avgLuminance << ","
-         << "\"estimated_lux\":" << Stats.estimatedLux << ","
-         << "\"estimated_watts\":" << Stats.estimatedWatts << ","
-         << "\"cumulative_kwh\":" << Stats.cumulativeKWh << ","
-         << "\"cumulative_g_co2e\":" << Stats.cumulativeGramsCO2e
+         << "\"carbon_score\":" << Stats.cumulativeGramsCO2e
          << "}";
     return json.str();
 }
