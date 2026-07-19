@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <string>
 #include <sstream>
-#include <iomanip>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -184,39 +183,17 @@ static int http_post_json(const std::string &host, int port, const std::string &
     return statusCode;
 }
 
-// Builds a human-readable explanation of how carbon_score was derived,
-// using the actual numbers from this reporting interval -- not generic
-// boilerplate, so it changes as the readings change.
-static std::string build_explanation() {
-    std::ostringstream text;
-    text.precision(1);
-    text << std::fixed;
-    text << "Estimated from average camera-scene brightness of "
-         << Stats.avgLuminance << " (0-255 scale), converted to "
-         << Stats.estimatedLux << " lux using a calibrated linear mapping. "
-         << "Assuming this brightness covers roughly " << CarbonCfg.approxAreaSqMeters
-         << " m^2 of lighting at " << CarbonCfg.luminousEfficacyLmPerW
-         << " lumens/watt efficacy, that implies about " << Stats.estimatedWatts
-         << " W of artificial lighting draw. Integrated over time, this yields "
-         << std::setprecision(5) << Stats.cumulativeKWh << " kWh, "
-         << "converted to CO2e using a grid intensity of " << std::setprecision(1)
-         << CarbonCfg.gridIntensityGperKWh << " g/kWh. "
-         << "Note: this is a camera-brightness proxy for lighting energy use, "
-         << "not a direct power meter reading.";
-    return text.str();
-}
-
-// Builds the JSON body posted to the website: the calculated carbon score
-// (running cumulative gCO2e total) plus a plain-language explanation of
-// how it was calculated this interval.
+// Builds the JSON body posted to the website: just the calculated carbon
+// score (running cumulative gCO2e total). See build_explanation() (used
+// only for local console/debug output, not sent to the frontend) for the
+// human-readable breakdown of how it's derived.
 static std::string build_reading_json() {
     std::ostringstream json;
     json.precision(4);
     json << std::fixed;
     json << "{"
          << "\"device_id\":\"" << DeviceId << "\","
-         << "\"carbon_score\":" << Stats.cumulativeGramsCO2e << ","
-         << "\"explanation\":\"" << build_explanation() << "\""
+         << "\"carbon_score\":" << Stats.cumulativeGramsCO2e
          << "}";
     return json.str();
 }
