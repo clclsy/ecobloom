@@ -14,7 +14,7 @@ interface ChatMessage {
  
 export default function DashboardAura() {
   // ── live data ──────────────────────────────────────────────────────────────
-  const [vitality, setVitality] = useState(78);
+  const [vitality, setVitality] = useState(100);
   const [tier, setTier] = useState("healthy");
  
   useEffect(() => {
