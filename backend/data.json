@@ -1,0 +1,23 @@
+{
+  "cameraReadings": [
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 1.2345,
+      "timestamp": "2026-07-19T14:03:22Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 2.5,
+      "timestamp": "2026-07-19T14:03:40Z"
+    }
+  ],
+  "manualEntries": [
+    {
+      "type": "electricity",
+      "amount": 45.2,
+      "unit": "kWh",
+      "date": "2026-07-19",
+      "estimatedGramsCO2e": 1356.0
+    }
+  ]
+}
