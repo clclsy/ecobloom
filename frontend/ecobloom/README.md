@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ecobloom
 
-## Getting Started
+A flower that lives with your habits.
 
-First, run the development server:
+A hardware sensor reads how a household uses energy (lights left on in
+empty rooms) and a flower glows or wilts to match. This is the marketing
+and demo site: a live interactive hero, a "how it works" walkthrough, an
+aura-style live dashboard with a Backboard AI assistant, and a phone
+notification preview.
+
+## Run it locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push this folder to a GitHub repo.
+2. Go to vercel.com, New Project, import the repo.
+3. Framework preset: Next.js (auto-detected). No env vars needed.
+4. Deploy.
 
-## Learn More
+Or from the CLI:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm i -g vercel
+vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js 16 (App Router) + TypeScript
+- Tailwind CSS v4
+- Framer Motion (flower + notification animations)
+- Self-hosted fonts via `@fontsource` (Fraunces + Sora), no external font
+  fetch at build time, so it will not break on a flaky network.
 
-## Deploy on Vercel
+## Where things live
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app/page.tsx`, the whole page, section by section
+- `components/HeroDemo.tsx`, the light-switch toggle driving the flower
+- `components/FlowerOrb.tsx`, the animated SVG flower (bloom to wilt)
+- `components/DashboardAura.tsx`, the live-reading dashboard card with the
+  flower, logo, vitality bar, and the "Ask Backboard" button
+- `components/PhoneMockup.tsx`, the notification preview
+- `app/globals.css`, color and font tokens (pastel pink and green theme)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Easy edits
+
+- Colors: `app/globals.css`, the `:root` block at the top.
+- Copy: mostly in `app/page.tsx`.
+- Flower vitality shown on the dashboard: `components/DashboardAura.tsx`,
+  the `VITALITY` constant near the top.
+- Notification text: `components/PhoneMockup.tsx`, the `notifs` array.
+- Backboard button link: `components/DashboardAura.tsx`, the `<a href="#">`
+  near the bottom, point it at your Backboard integration.
