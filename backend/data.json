@@ -9,6 +9,41 @@
       "device_id": "rpi5-demo-01",
       "carbon_score": 2.5,
       "timestamp": "2026-07-19T14:03:40Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0066,
+      "timestamp": "2026-07-19T10:25:00Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0136,
+      "timestamp": "2026-07-19T10:25:15Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0202,
+      "timestamp": "2026-07-19T10:25:30Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0269,
+      "timestamp": "2026-07-19T10:25:45Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0333,
+      "timestamp": "2026-07-19T10:26:00Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0407,
+      "timestamp": "2026-07-19T10:26:15Z"
+    },
+    {
+      "device_id": "rpi5-demo-01",
+      "carbon_score": 0.0472,
+      "timestamp": "2026-07-19T10:26:30Z"
     }
   ],
   "manualEntries": [
