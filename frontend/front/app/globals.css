@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fbf4f1;
+  --bg-deep: #f5e8e2;
+  --paper: #fffaf7;
+
+  --pink-soft: #f6d3e2;
+  --pink: #ea93b8;
+  --pink-deep: #c65e8c;
+
+  --green-soft: #d9ecd6;
+  --green: #82b98c;
+  --green-deep: #4f7f5b;
+
+  --amber: #f3c579;
+  --wilt: #a98164;
+  --wilt-deep: #7c5c46;
+
+  --ink: #372b3c;
+  --ink-soft: #6b5c6f;
+  --ink-faint: #a397a5;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Sora", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-deep: var(--bg-deep);
+  --color-paper: var(--paper);
+  --color-pink-soft: var(--pink-soft);
+  --color-pink: var(--pink);
+  --color-pink-deep: var(--pink-deep);
+  --color-green-soft: var(--green-soft);
+  --color-green: var(--green);
+  --color-green-deep: var(--green-deep);
+  --color-amber: var(--amber);
+  --color-wilt: var(--wilt);
+  --color-wilt-deep: var(--wilt-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* subtle grain so the pastel fields don't look flat/AI-default */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--pink-deep);
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--pink-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
