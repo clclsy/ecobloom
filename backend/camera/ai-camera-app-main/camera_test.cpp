@@ -26,9 +26,24 @@
 #include <csignal>
 #include <ctime>
 #include <unistd.h>
+#include <string>
+#include <sstream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 static volatile sig_atomic_t Running = 1;
 static void handle_sigint(int) { Running = 0; }
+
+// --------------------------------------------------------------------
+// EDIT THESE to match your website's ingestion endpoint and payload
+// schema. Plain HTTP (no TLS) since it's on your local network.
+// --------------------------------------------------------------------
+static const char *ReportHost = "192.168.1.100"; // <-- your website's IP/hostname
+static const int   ReportPort = 8000;             // <-- your website's port
+static const char *ReportPath = "/api/readings";  // <-- your ingestion endpoint path
+static const char *DeviceId   = "rpi5-demo-01";
+static const double ReportIntervalSeconds = 15.0;
 
 // --------------------------------------------------------------------
 // Carbon estimation config + state
@@ -107,6 +122,84 @@ static void carbon_process_luminance(double avgLuminance) {
 static uint32_t FrameWidth = 0;
 static uint32_t FrameHeight = 0;
 static camera_frametype_t FrameFormat;
+
+// --------------------------------------------------------------------
+// Networking: minimal blocking HTTP/1.1 POST over a raw BSD socket.
+// No libcurl -- just standard sockets, which QNX supports without any
+// extra port. Build with -lsocket if the linker can't find these calls.
+// --------------------------------------------------------------------
+static int http_post_json(const std::string &host, int port, const std::string &path, const std::string &jsonBody) {
+    struct addrinfo hints;
+    struct addrinfo *result = nullptr;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    std::ostringstream portStr;
+    portStr << port;
+
+    if (getaddrinfo(host.c_str(), portStr.str().c_str(), &hints, &result) != 0 || !result) {
+        return -1;
+    }
+
+    int sockFd = -1;
+    for (struct addrinfo *rp = result; rp != nullptr; rp = rp->ai_next) {
+        sockFd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (sockFd == -1) continue;
+        if (connect(sockFd, rp->ai_addr, rp->ai_addrlen) != -1) break;
+        close(sockFd);
+        sockFd = -1;
+    }
+    freeaddrinfo(result);
+    if (sockFd == -1) return -2;
+
+    std::ostringstream request;
+    request << "POST " << path << " HTTP/1.1\r\n"
+            << "Host: " << host << "\r\n"
+            << "Content-Type: application/json\r\n"
+            << "Content-Length: " << jsonBody.size() << "\r\n"
+            << "Connection: close\r\n"
+            << "\r\n"
+            << jsonBody;
+
+    std::string requestStr = request.str();
+    size_t totalSent = 0;
+    while (totalSent < requestStr.size()) {
+        ssize_t sent = send(sockFd, requestStr.c_str() + totalSent, requestStr.size() - totalSent, 0);
+        if (sent <= 0) { close(sockFd); return -3; }
+        totalSent += sent;
+    }
+
+    char buf[512] = {0};
+    ssize_t received = recv(sockFd, buf, sizeof(buf) - 1, 0);
+    close(sockFd);
+    if (received <= 0) return -4;
+
+    int statusCode = -5;
+    if (strncmp(buf, "HTTP/", 5) == 0) {
+        const char *spacePos = strchr(buf, ' ');
+        if (spacePos) statusCode = atoi(spacePos + 1);
+    }
+    return statusCode;
+}
+
+// Builds the JSON body posted to the website. Field names here are a
+// reasonable default -- rename them to match whatever your backend
+// actually expects.
+static std::string build_reading_json() {
+    std::ostringstream json;
+    json.precision(4);
+    json << std::fixed;
+    json << "{"
+         << "\"device_id\":\"" << DeviceId << "\","
+         << "\"avg_luminance\":" << Stats.avgLuminance << ","
+         << "\"estimated_lux\":" << Stats.estimatedLux << ","
+         << "\"estimated_watts\":" << Stats.estimatedWatts << ","
+         << "\"cumulative_kwh\":" << Stats.cumulativeKWh << ","
+         << "\"cumulative_g_co2e\":" << Stats.cumulativeGramsCO2e
+         << "}";
+    return json.str();
+}
 
 // Computes an average brightness (0-255) directly from the raw buffer,
 // without needing OpenCV. Handles the same formats the original sample
@@ -228,8 +321,24 @@ int main() {
     }
 
     printf("Viewfinder started. Press Ctrl+C to stop.\n");
+    struct timespec lastReportTime;
+    clock_gettime(CLOCK_MONOTONIC, &lastReportTime);
+
     while (Running) {
         usleep(500000);
+
+        struct timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        if (timespec_diff_seconds(now, lastReportTime) >= ReportIntervalSeconds) {
+            std::string body = build_reading_json();
+            int status = http_post_json(ReportHost, ReportPort, ReportPath, body);
+            if (status < 0) {
+                fprintf(stderr, "Report failed (network error code %d)\n", status);
+            } else {
+                printf("Reported reading, HTTP %d\n", status);
+            }
+            lastReportTime = now;
+        }
     }
 
     camera_stop_viewfinder(handle);
