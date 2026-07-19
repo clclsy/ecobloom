@@ -7,15 +7,13 @@
 // QNX Everywhere self-hosted developer desktop's toolchain (clang/clang++
 // only, no qcc/qmake, no recursive mkfiles).
 //
-// This opens the camera, starts the viewfinder, and for each frame prints
-// the average luma/brightness -- which both (a) proves the camera pipeline
-// works end-to-end, and (b) IS the core signal your carbon estimator needs,
-// so this doubles as its first real building block.
+// This opens the camera, starts the viewfinder, and for each frame
+// computes average brightness directly from the raw buffer and feeds it
+// into a carbon-estimate accumulator: brightness -> lux -> watts -> kWh
+// -> gCO2e. Prints a running line of stats once per second.
 //
 // Build:
-//   clang++ -std=c++14 camera_test.cpp -lcamapi -lscreen -lslog2 -o camera_test
-//   (add/remove libs if the linker complains -- these three match what
-//   common.mk's LIBS line uses for camera/screen/logging)
+//   clang++ -std=c++14 camera_test.cpp -lcamapi -lscreen -o camera_test
 //
 // Run:
 //   ./camera_test
@@ -26,10 +24,84 @@
 #include <cstdint>
 #include <cstring>
 #include <csignal>
+#include <ctime>
 #include <unistd.h>
 
 static volatile sig_atomic_t Running = 1;
 static void handle_sigint(int) { Running = 0; }
+
+// --------------------------------------------------------------------
+// Carbon estimation config + state
+//
+// Same model as CarbonEstimator.cpp/.h from earlier, but taking a plain
+// double luminance value instead of a cv::Mat -- no OpenCV needed at all.
+// See the longer design-notes comment in the original CarbonEstimator.h
+// for the honest limitations of this proxy-based approach; the short
+// version: a camera sees reflected light, not electrical draw, so this
+// is a calibrated heuristic, not a power meter. Tune the constants below
+// against a known light source before your demo.
+// --------------------------------------------------------------------
+struct CarbonConfig {
+    double luminanceToLuxSlope = 4.0;
+    double luminanceToLuxIntercept = 0.0;
+    double baselineLuminance = 8.0;
+    double luminousEfficacyLmPerW = 80.0;
+    double approxAreaSqMeters = 10.0;
+    double gridIntensityGperKWh = 30.0; // Ontario/IESO-ish default; change per region
+    double sampleIntervalSeconds = 1.0;
+};
+static CarbonConfig CarbonCfg;
+
+struct CarbonStats {
+    double avgLuminance = 0.0;
+    double estimatedLux = 0.0;
+    double estimatedWatts = 0.0;
+    double cumulativeKWh = 0.0;
+    double cumulativeGramsCO2e = 0.0;
+};
+static CarbonStats Stats;
+static struct timespec LastSampleTime = {0, 0};
+
+static double timespec_diff_seconds(const struct timespec &a, const struct timespec &b) {
+    return (a.tv_sec - b.tv_sec) + (a.tv_nsec - b.tv_nsec) / 1e9;
+}
+
+// Feed one luminance reading (0-255) into the accumulator. Throttled
+// internally to CarbonCfg.sampleIntervalSeconds -- safe to call on every
+// single camera frame.
+static void carbon_process_luminance(double avgLuminance) {
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    double elapsed = timespec_diff_seconds(now, LastSampleTime);
+    if (elapsed < CarbonCfg.sampleIntervalSeconds) {
+        return;
+    }
+
+    double estimatedLux = 0.0;
+    double estimatedWatts = 0.0;
+    if (avgLuminance > CarbonCfg.baselineLuminance) {
+        estimatedLux = CarbonCfg.luminanceToLuxSlope * avgLuminance + CarbonCfg.luminanceToLuxIntercept;
+        if (estimatedLux < 0) estimatedLux = 0;
+        double totalLumens = estimatedLux * CarbonCfg.approxAreaSqMeters;
+        estimatedWatts = totalLumens / CarbonCfg.luminousEfficacyLmPerW;
+    }
+
+    double kWhThisInterval = (estimatedWatts / 1000.0) * (elapsed / 3600.0);
+    double gramsThisInterval = kWhThisInterval * CarbonCfg.gridIntensityGperKWh;
+
+    Stats.avgLuminance = avgLuminance;
+    Stats.estimatedLux = estimatedLux;
+    Stats.estimatedWatts = estimatedWatts;
+    Stats.cumulativeKWh += kWhThisInterval;
+    Stats.cumulativeGramsCO2e += gramsThisInterval;
+
+    printf("avg_luma=%.2f  est_lux=%.1f  est_watts=%.2f  cum_kWh=%.5f  cum_gCO2e=%.4f\n",
+           Stats.avgLuminance, Stats.estimatedLux, Stats.estimatedWatts,
+           Stats.cumulativeKWh, Stats.cumulativeGramsCO2e);
+    fflush(stdout);
+
+    LastSampleTime = now;
+}
 
 // Frame geometry filled in once we've queried the camera.
 static uint32_t FrameWidth = 0;
@@ -100,13 +172,13 @@ static void frame_callback(camera_handle_t handle, camera_buffer_t *buf, void *a
     (void)handle; (void)arg;
     double luma = average_luma(buf);
     if (luma >= 0) {
-        printf("avg_luma=%.2f\n", luma);
-        fflush(stdout);
+        carbon_process_luminance(luma);
     }
 }
 
 int main() {
     signal(SIGINT, handle_sigint);
+    clock_gettime(CLOCK_MONOTONIC, &LastSampleTime);
 
     uint32_t numCameras = 0;
     int err = camera_get_supported_cameras(0, &numCameras, nullptr);
