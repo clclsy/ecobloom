@@ -1,4 +1,4 @@
-# 🌿 EcoBloom
+# EcoBloom
 
 ### *Making energy visible. Making waste emotional.*
 
@@ -6,20 +6,17 @@
 
 ## ✧ Inspiration
 
-We began with a simple question from the **Deloitte Green AI challenge**:
-
 > *How can AI be resource-efficient while solving environmental problems?*
 
-That question led us beyond software… into **something tangible**.
+That question led us beyond software… into something tangible.
 
-What if energy waste wasn’t just a number on a dashboard —
+What if energy waste wasn’t just a number on a dashboard,
 but something you could *feel*?
 
 **EcoBloom** is our answer:
 a living, reactive system that transforms invisible energy usage into an **emotional experience**.
 
-Because the truth is —
-people don’t change behavior from data.
+People don’t change behavior from data.
 They change from *feeling*.
 
 A dashboard saying:
@@ -35,38 +32,38 @@ That’s impossible to ignore.
 
 ## ✧ What It Does
 
-EcoBloom observes, interprets, and responds — in real time.
+EcoBloom observes, interprets, and responds in real time.
 
-### 🌱 The Plant (Hardware)
+### The Plant (Hardware)
 
 A physical plant powered by **green → yellow LED gradients**
 that reflect your energy behavior:
 
-* 💚 **100 (Healthy):** Fully green
-* 💛 **0 (Dying):** Fully yellow
-* 🌗 Smooth crossfade between states
+* **100 (Healthy):** Fully green
+* **0 (Dying):** Fully yellow
+* Smooth crossfade between states
 
 It doesn’t just display data —
 it *feels alive*.
 
 ---
 
-### 🤖 The Chatbot (AI)
+### LLM Chatbot (AI)
 
 Ask:
 
 > *“Why are you dying?”*
 
-EcoBloom responds with **real, grounded explanations**:
+EcoBloom responds with **real explanations**:
 
 > “Lights were on for 145 seconds with no one present.”
 
-Powered by **Backboard**, it uses actual sensor logs —
+Powered by **Backboard**, it uses actual sensor logs,
 not generic advice.
 
 ---
 
-### 🖥️ The Dashboard (Web)
+### The Dashboard (Web)
 
 A responsive interface showing:
 
@@ -76,8 +73,6 @@ A responsive interface showing:
 * Integrated chatbot
 
 A digital mirror of the physical system.
-
----
 
 ### ⚙️ The Backend (Real-Time System)
 
@@ -94,7 +89,7 @@ Everything updates in **real time**.
 
 ## ✧ How We Built It
 
-### 🧩 Tech Stack
+### Tech Stack
 
 * **Backend:** Python Flask + QNX RTOS (GPIO control)
 * **AI Layer:** Backboard.io (LLM orchestration + grounding)
@@ -103,7 +98,7 @@ Everything updates in **real time**.
 
 ---
 
-### 🧠 Key Design Decisions
+### Design Decisions
 
 **✦ Stateful Mood System**
 Tracks *duration*, not just events
