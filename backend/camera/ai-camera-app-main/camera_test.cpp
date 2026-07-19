@@ -76,6 +76,14 @@ static double average_luma(camera_buffer_t *buf) {
             sum += (uint32_t)(0.299 * c0 + 0.587 * c1 + 0.114 * c2); // rough; channel order doesn't matter much for a brightness proxy
             count++;
         }
+    } else if (FrameFormat == CAMERA_FRAMETYPE_NV12) {
+        // NV12: the first width*height bytes ARE the luma (Y) plane directly,
+        // one byte per pixel, no decoding needed at all -- just average them.
+        uint64_t numPixels = static_cast<uint64_t>(FrameWidth) * FrameHeight;
+        for (uint64_t i = 0; i < numPixels; i++) {
+            sum += data[i];
+            count++;
+        }
     } else {
         return -1; // unsupported format
     }
@@ -127,6 +135,16 @@ int main() {
         return 1;
     }
     printf("Camera format=%d width=%u height=%u\n", (int)FrameFormat, FrameWidth, FrameHeight);
+    const char *formatName = "UNKNOWN/UNHANDLED";
+    if (FrameFormat == CAMERA_FRAMETYPE_NV12) formatName = "NV12";
+    else if (FrameFormat == CAMERA_FRAMETYPE_CBYCRY) formatName = "CBYCRY";
+    else if (FrameFormat == CAMERA_FRAMETYPE_YCBYCR) formatName = "YCBYCR";
+    else if (FrameFormat == CAMERA_FRAMETYPE_RGB888) formatName = "RGB888";
+    else if (FrameFormat == CAMERA_FRAMETYPE_RGB8888) formatName = "RGB8888";
+    else if (FrameFormat == CAMERA_FRAMETYPE_BGR8888) formatName = "BGR8888";
+    else if (FrameFormat == CAMERA_FRAMETYPE_UNSPECIFIED) formatName = "UNSPECIFIED";
+    else if (FrameFormat == CAMERA_FRAMETYPE_GRAY8) formatName = "GRAY8";
+    printf("Format name: %s\n", formatName);
 
     camera_set_vf_property(handle, CAMERA_IMGPROP_CREATEWINDOW, false);
 
